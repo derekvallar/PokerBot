@@ -1,0 +1,123 @@
+setting up game...
+starting game ...
+stopping...
+winner: player2
+Saving the game...
+Settings hands_per_level 10
+Settings starting_stack 500
+Settings your_bot player1
+Settings timebank 10000
+Settings time_per_move 500
+Match round 1
+Match small_blind 10
+Match big_blind 20
+Match on_button player2
+player1 stack 500
+player2 stack 500
+player2 post 10
+player1 post 20
+player1 hand [7c,5s]
+player2 fold 0
+player1 wins 30
+Match round 2
+Match small_blind 10
+Match big_blind 20
+Match on_button player1
+player1 stack 510
+player2 stack 490
+player1 post 10
+player2 post 20
+player1 hand [4s,Ac]
+Match max_win_pot 30
+Match amount_to_call 10
+Action player1 10000
+Output from your bot: "raise 40"
+player1 raise 40
+player2 raise 40
+Match max_win_pot 160
+Match amount_to_call 40
+Action player1 10000
+Output from your bot: "raise 40"
+player1 raise 40
+player2 raise 40
+Match max_win_pot 320
+Match amount_to_call 40
+Action player1 10000
+Output from your bot: "raise 40"
+player1 raise 40
+player2 raise 40
+Match max_win_pot 480
+Match amount_to_call 40
+Action player1 10000
+Output from your bot: "raise 40"
+player1 raise 40
+player2 raise 40
+Match max_win_pot 640
+Match amount_to_call 40
+Action player1 10000
+Output from your bot: "raise 40"
+player1 raise 40
+player2 raise 40
+Match max_win_pot 800
+Match amount_to_call 40
+Action player1 10000
+Output from your bot: "raise 40"
+player1 raise 40
+player2 raise 30
+Match max_win_pot 950
+Match amount_to_call 30
+Action player1 10000
+Output from your bot: "raise 40"
+Engine says: "Other involved players are already all-in, raise action changed to 'call'"
+player1 call 30
+Match table [8s,7s,3c]
+Match table [8s,7s,3c,7c]
+Match table [8s,7s,3c,7c,Ks]
+player1 hand [4s,Ac]
+player2 hand [7d,Qh]
+player2 wins 980
+Match round 3
+Match small_blind 10
+Match big_blind 20
+Match on_button player2
+player1 stack 20
+player2 stack 980
+player2 post 10
+player1 post 20
+player1 hand [9h,2s]
+player2 fold 0
+player1 wins 30
+Match round 4
+Match small_blind 10
+Match big_blind 20
+Match on_button player1
+player1 stack 30
+player2 stack 970
+player1 post 10
+player2 post 20
+player1 hand [Jc,7d]
+Match max_win_pot 30
+Match amount_to_call 10
+Action player1 10000
+Output from your bot: "check 0"
+Engine says: "Other player did make a bet, check action changed to 'fold'"
+player1 fold 0
+player2 wins 30
+Match round 5
+Match small_blind 10
+Match big_blind 20
+Match on_button player2
+player1 stack 20
+player2 stack 980
+player2 post 10
+player1 post 20
+player1 hand [Ac,Qd]
+player2 call 10
+Match table [Kd,7d,3c]
+Match table [Kd,7d,3c,4h]
+Match table [Kd,7d,3c,4h,5d]
+player1 hand [Ac,Qd]
+player2 hand [6s,Qs]
+player2 wins 40
+
+Done.

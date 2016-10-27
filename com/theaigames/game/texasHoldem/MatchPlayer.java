@@ -1453,7 +1453,7 @@ public class MatchPlayer
 	
 	private void outputErrorToBot(int seat, String output) 
 	{
-		players.get(seat).getBot().addToDump("Engine says: \"" + output + "\"\n");
+		players.get(seat).addToDump("Engine says: \"" + output + "\"\n");
 	}
 	
 	/**

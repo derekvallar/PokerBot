@@ -32,7 +32,7 @@ public class BotParser {
 	}
 
 	public void run() {
-		BotState currentState = new BotState();
+		PlayerState currentState = new PlayerState();
 		while( scan.hasNextLine() ) {
 			String line = scan.nextLine().trim();
 			if( line.length() == 0 ) { continue; }

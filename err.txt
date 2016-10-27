@@ -1,14 +1,11 @@
 Round 1
 Round 2
 my hand is NO_PAIR, opponent action is null, pot: 30
-my hand is NO_PAIR, opponent action is raise 40, pot: 160
-my hand is NO_PAIR, opponent action is raise 40, pot: 320
-my hand is NO_PAIR, opponent action is raise 40, pot: 480
-my hand is NO_PAIR, opponent action is raise 40, pot: 640
-my hand is NO_PAIR, opponent action is raise 40, pot: 800
-my hand is NO_PAIR, opponent action is raise 30, pot: 950
 Round 3
-Round 4
-my hand is NO_PAIR, opponent action is null, pot: 30
-Round 5
+my hand is NO_PAIR, opponent action is raise 40, pot: 80
+my hand is NO_PAIR, opponent action is raise 40, pot: 240
+my hand is NO_PAIR, opponent action is raise 40, pot: 400
+my hand is NO_PAIR, opponent action is raise 40, pot: 560
+my hand is NO_PAIR, opponent action is raise 40, pot: 720
+my hand is NO_PAIR, opponent action is raise 40, pot: 880
 

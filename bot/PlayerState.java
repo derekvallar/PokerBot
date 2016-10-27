@@ -21,7 +21,7 @@ import poker.PokerMove;
 /**
  * Class that parses strings given by the engine and stores values for later use.
  */
-public class BotState {
+public class PlayerState {
 	
 	private int round, smallBlind, bigBlind;
 	
@@ -47,7 +47,7 @@ public class BotState {
 	
 	private int[] sidepots;
 	
-	private int timeBank, timePerMove;
+	private int timePerMove;
 	
 	private int handsPerLevel;
 	
@@ -56,12 +56,10 @@ public class BotState {
 	 * @param key : key of the information given
 	 * @param value : value to be set for the key
 	 */
-	protected void updateSetting(String key, String value) {
+	public void updateSetting(String key, String value) {
 		settings.put(key, value);
 		if( key.equals("your_bot") ) {
 			myName = value;
-		} else if ( key.equals("timebank") ) {			// Maximum amount of time your bot can take for one response
-			timeBank = Integer.valueOf(value);
 		} else if ( key.equals("time_per_move") ) {		// The extra amount of time you get per response
 			timePerMove = Integer.valueOf(value);
 		} else if ( key.equals("hands_per_level") ) {	// Number of rounds before the blinds are increased
@@ -79,7 +77,7 @@ public class BotState {
 	 * @param key : key of the information given
 	 * @param value : value to be set for the key
 	 */
-	protected void updateMatch(String key, String value) {
+	public void updateMatch(String key, String value) {
 		if( key.equals("round") ) { 				// Round number
 			round = Integer.valueOf(value);
 			System.err.println("Round " + round);   //printing the round to the output for debugging
@@ -107,7 +105,7 @@ public class BotState {
 	 * @param key : key of the information given
 	 * @param amount : value to be set for the key
 	 */
-	protected void updateMove(String bot, String key, String amount) {
+	public void updateMove(String bot, String key, String amount) {
 		if( bot.equals(myName) ) {
 			if( key.equals("stack") ) {					// The amount in your starting stack
 				myStack = Integer.valueOf(amount);
@@ -143,7 +141,7 @@ public class BotState {
 	 * @param String value : input
 	 * @return Card[] : array of Card objects
 	 */
-	private Card[] parseCards(String value) {
+	public Card[] parseCards(String value) {
 		if( value.endsWith("]") ) { value = value.substring(0, value.length()-1); }
 		if( value.startsWith("[") ) { value = value.substring(1); }
 		if( value.length() == 0 ) { return new Card[0]; }
@@ -159,7 +157,7 @@ public class BotState {
 	 * Reset all the variables at the start of the round,
 	 * just to make sure we don't use old values
 	 */
-	private void resetRoundVariables() {
+	public void resetRoundVariables() {
 		smallBlind = 0;
 		bigBlind = 0;
 		pot = 0;

@@ -16,6 +16,6 @@ import poker.PokerMove;
 
 public interface Bot {
 
-	public PokerMove getMove(BotState state, Long timeOut);
+	public PokerMove getMove(PlayerState state, Long timeOut);
 
 }

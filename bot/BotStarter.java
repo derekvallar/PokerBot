@@ -32,7 +32,7 @@ public class BotStarter implements Bot {
 	 * @return PokerMove : The move you will be doing
 	 */
 	@Override
-	public PokerMove getMove(BotState state, Long timeOut) {
+	public PokerMove getMove(PlayerState state, Long timeOut) {
 		HandHoldem hand = state.getHand();
 		String handCategory = getHandCategory(hand, state.getTable()).toString();
 		System.err.printf("my hand is %s, opponent action is %s, pot: %d\n", handCategory, state.getOpponentAction(), state.getPot());
@@ -50,7 +50,7 @@ public class BotStarter implements Bot {
 			return new PokerMove(state.getMyName(), "check", 0);
 		}
 	}
-	
+
 	/**
 	 * Calculates the bot's hand strength, with 0, 3, 4 or 5 cards on the table.
 	 * This uses the com.stevebrecher package to get hand strength.
@@ -66,24 +66,17 @@ public class BotStarter implements Bot {
 		}
 		long handCode = hand.getCard(0).getNumber() + hand.getCard(1).getNumber();
 		
-		for( Card card : table ) {
-			handCode += card.getNumber();
-			System.err.print(card.toString() + ", ");
-		}
-		System.err.println();
+		for( Card card : table ) { handCode += card.getNumber(); }
 		
 		if( table.length == 3 ) { // three cards on the table
-			System.err.print("3 cards on table.");
 			return rankToCategory(HandEval.hand5Eval(handCode));
 		}
 		if( table.length == 4 ) { // four cards on the table
-			System.err.print("4 cards on table.");
 			return rankToCategory(HandEval.hand6Eval(handCode));
 		}
-		System.err.print("5 cards on table.");
 		return rankToCategory(HandEval.hand7Eval(handCode)); // five cards on the table
 	}
-	
+
 	/**
 	 * small method to convert the int 'rank' to a readable enum called HandCategory
 	 */

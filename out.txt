@@ -16,7 +16,7 @@ player1 stack 500
 player2 stack 500
 player2 post 10
 player1 post 20
-player1 hand [7c,5s]
+player1 hand [Ac,3c]
 player2 fold 0
 player1 wins 30
 Match round 2
@@ -27,75 +27,7 @@ player1 stack 510
 player2 stack 490
 player1 post 10
 player2 post 20
-player1 hand [4s,Ac]
-Match max_win_pot 30
-Match amount_to_call 10
-Action player1 10000
-Output from your bot: "raise 40"
-player1 raise 40
-player2 raise 40
-Match max_win_pot 160
-Match amount_to_call 40
-Action player1 10000
-Output from your bot: "raise 40"
-player1 raise 40
-player2 raise 40
-Match max_win_pot 320
-Match amount_to_call 40
-Action player1 10000
-Output from your bot: "raise 40"
-player1 raise 40
-player2 raise 40
-Match max_win_pot 480
-Match amount_to_call 40
-Action player1 10000
-Output from your bot: "raise 40"
-player1 raise 40
-player2 raise 40
-Match max_win_pot 640
-Match amount_to_call 40
-Action player1 10000
-Output from your bot: "raise 40"
-player1 raise 40
-player2 raise 40
-Match max_win_pot 800
-Match amount_to_call 40
-Action player1 10000
-Output from your bot: "raise 40"
-player1 raise 40
-player2 raise 30
-Match max_win_pot 950
-Match amount_to_call 30
-Action player1 10000
-Output from your bot: "raise 40"
-Engine says: "Other involved players are already all-in, raise action changed to 'call'"
-player1 call 30
-Match table [8s,7s,3c]
-Match table [8s,7s,3c,7c]
-Match table [8s,7s,3c,7c,Ks]
-player1 hand [4s,Ac]
-player2 hand [7d,Qh]
-player2 wins 980
-Match round 3
-Match small_blind 10
-Match big_blind 20
-Match on_button player2
-player1 stack 20
-player2 stack 980
-player2 post 10
-player1 post 20
-player1 hand [9h,2s]
-player2 fold 0
-player1 wins 30
-Match round 4
-Match small_blind 10
-Match big_blind 20
-Match on_button player1
-player1 stack 30
-player2 stack 970
-player1 post 10
-player2 post 20
-player1 hand [Jc,7d]
+player1 hand [Jh,7d]
 Match max_win_pot 30
 Match amount_to_call 10
 Action player1 10000
@@ -103,21 +35,57 @@ Output from your bot: "check 0"
 Engine says: "Other player did make a bet, check action changed to 'fold'"
 player1 fold 0
 player2 wins 30
-Match round 5
+Match round 3
 Match small_blind 10
 Match big_blind 20
 Match on_button player2
-player1 stack 20
-player2 stack 980
+player1 stack 500
+player2 stack 500
 player2 post 10
 player1 post 20
-player1 hand [Ac,Qd]
-player2 call 10
-Match table [Kd,7d,3c]
-Match table [Kd,7d,3c,4h]
-Match table [Kd,7d,3c,4h,5d]
-player1 hand [Ac,Qd]
-player2 hand [6s,Qs]
-player2 wins 40
+player1 hand [Kc,3s]
+player2 raise 40
+Match max_win_pot 80
+Match amount_to_call 40
+Action player1 10000
+Output from your bot: "raise 40"
+player1 raise 40
+player2 raise 40
+Match max_win_pot 240
+Match amount_to_call 40
+Action player1 10000
+Output from your bot: "raise 40"
+player1 raise 40
+player2 raise 40
+Match max_win_pot 400
+Match amount_to_call 40
+Action player1 10000
+Output from your bot: "raise 40"
+player1 raise 40
+player2 raise 40
+Match max_win_pot 560
+Match amount_to_call 40
+Action player1 10000
+Output from your bot: "raise 40"
+player1 raise 40
+player2 raise 40
+Match max_win_pot 720
+Match amount_to_call 40
+Action player1 10000
+Output from your bot: "raise 40"
+player1 raise 40
+player2 raise 40
+Match max_win_pot 880
+Match amount_to_call 40
+Action player1 10000
+Output from your bot: "raise 40"
+player1 raise 40
+player2 call 40
+Match table [4d,Ts,Ah]
+Match table [4d,Ts,Ah,2d]
+Match table [4d,Ts,Ah,2d,Qs]
+player1 hand [Kc,3s]
+player2 hand [Kh,2c]
+player2 wins 1000
 
 Done.

@@ -17,8 +17,11 @@
 
 package com.theaigames.engine;
 
+import com.theaigames.game.texasHoldem.Player;
 import com.theaigames.engine.io.BotCommunication;
 import com.theaigames.engine.io.IOPlayer;
+import com.theaigames.engine.io.HumanPlayer;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -41,12 +44,12 @@ public class Engine implements BotCommunication {
     private Logic logic;
     
     // ArrayList containing player handlers
-    private ArrayList<IOPlayer> players;
+    private ArrayList<Player> players;
     
     // Engine constructor 
     public Engine() {
         this.isRunning = false;
-        this.players = new ArrayList<IOPlayer>();
+        this.players = new ArrayList<Player>();
     }
     
     // Sets game logic
@@ -61,7 +64,7 @@ public class Engine implements BotCommunication {
     
     @Override
     // Adds a player to the game
-    public void addPlayer(String command) throws IOException {
+    public void addBot(String command) throws IOException {
 
         // Create new process
         Process process = Runtime.getRuntime().exec(command);
@@ -75,22 +78,29 @@ public class Engine implements BotCommunication {
         // Start running
         player.run();
     }
-    
+
+    public void addHuman() {
+        HumanPlayer player = new HumanPlayer();
+        
+        // Add player
+        this.players.add(player);
+    }
+
     @Override
     // Method to start engine
     public void start() throws Exception {
-    	
+
     	int round = 0;
-        
+
         // Set engine to running
         this.isRunning = true;
-        
+
         // Set up game settings
         this.logic.setupGame(this.players);
 
         // Keep running
         while (this.isRunning) {
-        
+
         	round++;
 
             // Play a round
@@ -100,10 +110,10 @@ public class Engine implements BotCommunication {
             if (this.hasEnded()) {
 
                 System.out.println("stopping...");
-                
+
                 // Stop running
                 this.isRunning = false;
-                
+
                 // Close off everything
                 try {
                 	this.logic.finish();

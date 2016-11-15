@@ -21,9 +21,9 @@ public class PokerMove {
 	String action = null;
 	int amount;
 
-	public PokerMove(String botName, String act, int amt)
+	public PokerMove(String name, String act, int amt)
 	{
-		player = botName;
+		player = name;
 		action = act;
 		amount = amt;
 	}

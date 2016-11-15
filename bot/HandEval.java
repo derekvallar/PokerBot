@@ -1,4 +1,4 @@
-package com.stevebrecher;
+package bot;
 
 /**
  * Non-instantiable class containing a variety of static poker hand evaluation and related utility methods.

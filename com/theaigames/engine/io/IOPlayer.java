@@ -33,7 +33,7 @@ import java.util.logging.Logger;
  * @author Jackie Xu <jackie@starapple.nl>, Jim van Eeden <jim@starapple.nl>
  */
 public class IOPlayer extends Player implements Runnable{
-    
+
     private Process process;
     private OutputStreamWriter inputStream;
     private InputStreamGobbler outputGobbler;
@@ -41,11 +41,12 @@ public class IOPlayer extends Player implements Runnable{
     private int errorCounter;
     private boolean finished;
     private final int maxErrors = 2;
-    
+    private long timePerMove;
+
     public String response;
     
-    public IOPlayer(Process process) {
-        super();
+    public IOPlayer(Process process, String name, long time) {
+        super(name);
 
         this.inputStream = new OutputStreamWriter(process.getOutputStream());
     	this.outputGobbler = new InputStreamGobbler(process.getInputStream(), this, "output");
@@ -53,17 +54,17 @@ public class IOPlayer extends Player implements Runnable{
         this.process = process;
         this.errorCounter = 0;
         this.finished = false;
+        this.timePerMove = time;
     }
 
-    public PokerMove requestMove() 
-    {        
+    public PokerMove requestMove() {
         try {
-            this.process(String.format("Action %s %d", getName(), getTimePerMove()), "input");
+            this.process(String.format("Action %s %d", getName(), timePerMove), "input");
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        String response = getResponse(getTimePerMove());
+
+        String response = getResponse(timePerMove);
 
         if(response == "") {
             addToDump("Error, action set to 'check'");
@@ -74,7 +75,7 @@ public class IOPlayer extends Player implements Runnable{
             else
                 return new PokerMove(parts[0], (int) Double.parseDouble(parts[1]));
         }
-        
+
         return new PokerMove("check", 0);
     }
 
@@ -89,6 +90,9 @@ public class IOPlayer extends Player implements Runnable{
 
     // processes a line by reading it or writing it
     public void process(String line, String type) throws IOException {
+
+System.err.println("IOPlayer: " + type + ", " + line);
+
         if (!this.finished) {
         	switch (type) {
         	case "input":
@@ -96,7 +100,7 @@ public class IOPlayer extends Player implements Runnable{
             		this.inputStream.write(line + "\n");
             		this.inputStream.flush();
                 } catch(IOException e) {
-                    System.err.println("Writing to bot failed");
+                    System.err.println("Writing to bot failed: "+ e);
                 }
                 addToDump(line + "\n");
         		break;
@@ -151,6 +155,8 @@ public class IOPlayer extends Player implements Runnable{
 
     // ends the bot process and it's communication
     public void finish() {
+
+System.err.println("Finished Dx");
 
         if(this.finished)
             return;

@@ -2,5 +2,5 @@
 // Compile:
 javac -d bin/ `find ./ -name '*.java' -regex '^[./A-Za-z0-9]*$'`
 
-// Run One Bot and One Human:
-java -cp bin com.theaigames.game.texasHoldem.TexasHoldem "java -cp bin bot.BotStarter"
+// Run One Bot and One:
+java -cp bin com.theaigames.game.texasHoldem.TexasHoldem "java -cp bin bot.BotStarter" "java -cp bin bot.BotStarter" 2>err.txt 1>out.txt

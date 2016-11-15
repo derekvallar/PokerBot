@@ -16,7 +16,7 @@ import poker.Card;
 import poker.HandHoldem;
 import poker.PokerMove;
 
-import com.stevebrecher.HandEval;
+import com.theaigames.engine.io.PlayerState;
 
 /**
  * This class is the brains of your bot. Make your calculations here and return the best move with GetMove
@@ -36,11 +36,11 @@ public class BotStarter implements Bot {
 		HandHoldem hand = state.getHand();
 		String handCategory = getHandCategory(hand, state.getTable()).toString();
 		System.err.printf("my hand is %s, opponent action is %s, pot: %d\n", handCategory, state.getOpponentAction(), state.getPot());
-		
+
 		// Get the ordinal values of the cards in your hand
 		int height1 = hand.getCard(0).getHeight().ordinal();
 		int height2 = hand.getCard(1).getHeight().ordinal();
-		
+
 		// Return the appropriate move according to our amazing strategy
 		if( height1 > 9 || height2 > 9 ) {
 			return new PokerMove(state.getMyName(), "raise", 2*state.getBigBlind());
@@ -88,6 +88,10 @@ public class BotStarter implements Bot {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+
+
+System.err.println("Creating new bot");
+
 		BotParser parser = new BotParser(new BotStarter());
 		parser.run();
 	}

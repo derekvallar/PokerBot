@@ -34,7 +34,7 @@ public class TexasHoldem implements Logic
 	private MatchPlayer matchPlayer;
 	private ArrayList<Player> players;
     
-    private final long TIME_PER_MOVE = 30000l; 		// time in milliseconds that bots get per move
+    private final static long TIME_PER_MOVE = 5000l; 		// time in milliseconds that bots get per move
 	private final int GAME_TYPE = 13;				// no limit Texas Hold 'em, tournament form
     private final int STARTING_STACK = 500;
     private final int MAX_HANDS = Integer.MAX_VALUE;
@@ -102,9 +102,8 @@ public class TexasHoldem implements Logic
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		System.out.println("Done.");
-		
         System.exit(0);
 	}
 
@@ -144,8 +143,8 @@ public class TexasHoldem implements Logic
 		engine.setLogic(new TexasHoldem());
 		
 		// Add players
-        engine.addHuman();
-        engine.addBot(bot1);
+        engine.addHuman("TestHuman");
+        engine.addBot(bot1, "bot1", TIME_PER_MOVE);
 		
         engine.start();
 	}

@@ -19,21 +19,23 @@ package com.theaigames.game.texasHoldem;
 
 import java.io.IOException;
 
+import com.theaigames.engine.io.PlayerState;
 import com.theaigames.engine.io.IOPlayer;
 import com.theaigames.game.texasHoldem.move.PokerMove;
 
 /**
- * Class that represents one Robot object and stores additional information such as the name that the bot receives and
+ * Class that represents one Player object and stores additional information such as the name that the bot receives and
  * which person is the author.
  */
 public abstract class Player
 {
-	private String name;
-	private long timePerMove;
+	protected String name;
+	protected PlayerState state;
+    protected Process process;
+   	protected StringBuilder dump;
 
-    private StringBuilder dump;
-
-    public Player() {
+    public Player(String name) {
+    	this.name = name;
     	this.dump = new StringBuilder();
     }
 
@@ -56,14 +58,6 @@ public abstract class Player
 	 */
 	public String getName() {
 		return name;
-	}
-
-	public void setTimePerMove(long time) {
-		this.timePerMove = time;
-	}
-
-	public long getTimePerMove() {
-		return timePerMove;
 	}
 
 	public abstract void sendInfo(String info);

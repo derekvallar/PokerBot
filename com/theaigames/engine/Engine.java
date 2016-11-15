@@ -61,16 +61,16 @@ public class Engine implements BotCommunication {
     public boolean hasEnded() {
         return this.logic.isGameWon();
     }
-    
+
     @Override
     // Adds a player to the game
-    public void addBot(String command) throws IOException {
+    public void addBot(String command, String name, long time) throws IOException {
 
         // Create new process
         Process process = Runtime.getRuntime().exec(command);
 
         // Attach IO to process
-        IOPlayer player = new IOPlayer(process);
+        IOPlayer player = new IOPlayer(process, name, time);
         
         // Add player
         this.players.add(player);
@@ -79,8 +79,8 @@ public class Engine implements BotCommunication {
         player.run();
     }
 
-    public void addHuman() {
-        HumanPlayer player = new HumanPlayer();
+    public void addHuman(String name) {
+        HumanPlayer player = new HumanPlayer(name);
         
         // Add player
         this.players.add(player);

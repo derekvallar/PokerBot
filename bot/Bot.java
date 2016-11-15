@@ -13,6 +13,7 @@
 package bot;
 
 import poker.PokerMove;
+import com.theaigames.engine.io.PlayerState;
 
 public interface Bot {
 

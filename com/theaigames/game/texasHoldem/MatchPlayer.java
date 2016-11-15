@@ -26,7 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
-import com.stevebrecher.HandEval;
+import bot.HandEval;
 import com.theaigames.game.texasHoldem.match.MatchInfo;
 import com.theaigames.game.texasHoldem.match.MatchInfoType;
 import com.theaigames.game.texasHoldem.move.PokerMove;

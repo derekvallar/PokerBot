@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import com.theaigames.engine.Engine;
 import com.theaigames.engine.Logic;
 import com.theaigames.engine.io.IOPlayer;
-import com.theaigames.engine.io.HumanPlayer;
 
 import java.lang.Thread;
 
@@ -34,7 +33,8 @@ public class TexasHoldem implements Logic
 	private MatchPlayer matchPlayer;
 	private ArrayList<Player> players;
     
-    private final static long TIME_PER_MOVE = 5000l; 		// time in milliseconds that bots get per move
+    private final long TIME_PER_MOVE = 500l; 		// time in milliseconds that bots get per move
+	private final long TIMEBANK_MAX = 10000l;		// time bank each bot receives
 	private final int GAME_TYPE = 13;				// no limit Texas Hold 'em, tournament form
     private final int STARTING_STACK = 500;
     private final int MAX_HANDS = Integer.MAX_VALUE;
@@ -50,12 +50,18 @@ public class TexasHoldem implements Logic
 	}
 	
 	@Override
-	public void setupGame(ArrayList<Player> inputPlayers) throws IncorrectPlayerCountException, IOException
+	public void setupGame(ArrayList<IOPlayer> ioPlayers) throws IncorrectPlayerCountException, IOException
 	{
 		System.out.println("setting up game...");
 		
-		players = inputPlayers;
-
+		// Determine array size is two players
+        if (ioPlayers.size() != 2) {
+            throw new IncorrectPlayerCountException("Should be two players");
+        }
+        
+        players.add(new Player(playerName1, ioPlayers.get(0), TIMEBANK_MAX, TIME_PER_MOVE));
+        players.add(new Player(playerName2, ioPlayers.get(1), TIMEBANK_MAX, TIME_PER_MOVE));
+		
         // start the match player and send setup info to bots
         System.out.println("starting game ...");
 		matchPlayer = new MatchPlayer(players, GAME_TYPE, STARTING_STACK);
@@ -63,6 +69,7 @@ public class TexasHoldem implements Logic
 		
 		// set the timebank to maximum amount to start with and send timebank info
 		for(Player player : players) {
+			player.setTimeBank(TIMEBANK_MAX);
 			sendSettings(player);
 		}
 	}
@@ -92,7 +99,7 @@ public class TexasHoldem implements Logic
 	public void finish() throws Exception
 	{
 		for(Player player : players) {
-			player.finish();
+			player.getBot().finish();
 		}
 		Thread.sleep(100);
 
@@ -102,14 +109,16 @@ public class TexasHoldem implements Logic
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
-
+		
 		System.out.println("Done.");
+		
         System.exit(0);
 	}
 
 	private void sendSettings(Player player)
 	{
 		player.sendInfo("Settings your_bot " + player.getName());
+		player.sendInfo("Settings timebank " + TIMEBANK_MAX);
 		player.sendInfo("Settings time_per_move " + TIME_PER_MOVE); 
 	}
 	
@@ -117,8 +126,8 @@ public class TexasHoldem implements Logic
 		
 		Player winner = this.matchPlayer.getWinner();
 		int score = this.matchPlayer.getHandNumber();
-		Player p1 = players.get(0);
-		Player p2 = players.get(1);
+		IOPlayer bot1 = players.get(0).getBot();
+		IOPlayer bot2 = players.get(1).getBot();
 		
 		if(winner != null) {
 			System.out.println("winner: " + winner.getName());
@@ -130,24 +139,23 @@ public class TexasHoldem implements Logic
 		
 		// print stuff here... (like the bot dumps)
 
-		System.out.println(p1.getDump());
-		// System.err.println(p1.getStderr());
+		System.out.println(bot1.getDump());
+		System.err.println(bot1.getStderr());
 	}
     
-    public static void main(String args[]) throws Exception
-	{	
+    public static void main(String args[]) throws Exception {	
+
 		String bot1 = args[0];
+		// String bot2 = args[1];
 		
 		Engine engine = new Engine();
 		
 		engine.setLogic(new TexasHoldem());
 		
 		// Add players
-        engine.addHuman("TestHuman");
-        engine.addBot(bot1, "bot1", TIME_PER_MOVE);
+        engine.addHumanPlayer();
+        engine.addBotPlayer(bot1);
 		
         engine.start();
 	}
-
-
 }

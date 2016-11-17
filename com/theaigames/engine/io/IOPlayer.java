@@ -17,9 +17,6 @@
 
 package com.theaigames.engine.io;
 
-import com.theaigames.game.texasHoldem.Player;
-import com.theaigames.game.texasHoldem.move.PokerMove;
-
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.logging.Level;
@@ -32,67 +29,31 @@ import java.util.logging.Logger;
  * 
  * @author Jackie Xu <jackie@starapple.nl>, Jim van Eeden <jim@starapple.nl>
  */
-public class IOPlayer extends Player implements Runnable{
+public class IOPlayer implements Runnable {
 
-    private Process process;
-    private OutputStreamWriter inputStream;
-    private InputStreamGobbler outputGobbler;
-    private InputStreamGobbler errorGobbler;
-    private int errorCounter;
-    private boolean finished;
-    private final int maxErrors = 2;
-    private long timePerMove;
+    protected Process process;
+    protected OutputStreamWriter inputStream;
+    protected InputStreamGobbler outputGobbler;
+    protected InputStreamGobbler errorGobbler;
+    protected StringBuilder dump;
+    protected int errorCounter;
+    protected boolean finished;
+    protected final int maxErrors = 2;
 
     public String response;
-    
-    public IOPlayer(Process process, String name, long time) {
-        super(name);
 
+    public IOPlayer(Process process) {
         this.inputStream = new OutputStreamWriter(process.getOutputStream());
     	this.outputGobbler = new InputStreamGobbler(process.getInputStream(), this, "output");
     	this.errorGobbler = new InputStreamGobbler(process.getErrorStream(), this, "error");
         this.process = process;
+        this.dump = new StringBuilder();
         this.errorCounter = 0;
         this.finished = false;
-        this.timePerMove = time;
-    }
-
-    public PokerMove requestMove() {
-        try {
-            this.process(String.format("Action %s %d", getName(), timePerMove), "input");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        String response = getResponse(timePerMove);
-
-        if(response == "") {
-            addToDump("Error, action set to 'check'");
-        } else {
-            String[] parts = response.split("\\s");
-            if(parts.length != 2)
-                addToDump("Bot input '" + response + "' does not split into two parts. Action set to \"check\"");
-            else
-                return new PokerMove(parts[0], (int) Double.parseDouble(parts[1]));
-        }
-
-        return new PokerMove("check", 0);
-    }
-
-    public void sendInfo(String info) 
-    {
-        try {
-            this.process(info, "input");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     // processes a line by reading it or writing it
     public void process(String line, String type) throws IOException {
-
-System.err.println("IOPlayer: " + type + ", " + line);
-
         if (!this.finished) {
         	switch (type) {
         	case "input":
@@ -100,7 +61,7 @@ System.err.println("IOPlayer: " + type + ", " + line);
             		this.inputStream.write(line + "\n");
             		this.inputStream.flush();
                 } catch(IOException e) {
-                    System.err.println("Writing to bot failed: "+ e);
+                    System.err.println("Writing to bot failed");
                 }
                 addToDump(line + "\n");
         		break;
@@ -118,16 +79,16 @@ System.err.println("IOPlayer: " + type + ", " + line);
     public String getResponse(long timeOut) {
     	long timeStart = System.currentTimeMillis();
     	String response;
-
+		
     	if (this.errorCounter > this.maxErrors) {
     		addToDump("Maximum number (" + this.maxErrors + ") of time-outs reached: skipping all moves.\n");
     		return "";
     	}
-
+    	
     	while(this.response == null) {
     		long timeNow = System.currentTimeMillis();
 			long timeElapsed = timeNow - timeStart;
-
+			
 			if(timeElapsed >= timeOut) {
 				addToDump("Response timed out (" + timeOut + "ms), let your bot return 'No moves' instead of nothing or make it faster.\n");
 				this.errorCounter++;
@@ -137,7 +98,7 @@ System.err.println("IOPlayer: " + type + ", " + line);
                 addToDump("Output from your bot: null");
 				return "";
 			}
-
+			
 			try { Thread.sleep(2); } catch (InterruptedException e) {}
     	}
 		if(this.response.equalsIgnoreCase("No moves")) {
@@ -145,18 +106,16 @@ System.err.println("IOPlayer: " + type + ", " + line);
             addToDump("Output from your bot: \"No moves\"\n");
 			return "";
 		}
-
+		
 		response = this.response;
 		this.response = null;
 
 		addToDump("Output from your bot: \"" + response + "\"\n");
 		return response;
     }
-
+    
     // ends the bot process and it's communication
     public void finish() {
-
-System.err.println("Finished Dx");
 
         if(this.finished)
             return;
@@ -179,7 +138,10 @@ System.err.println("Finished Dx");
         return this.process;
     }
     
-
+    public void addToDump(String dumpy){
+        System.out.println(dumpy);
+		dump.append(dumpy);
+	}
     
     public String getStdout() {
     	return this.outputGobbler.getData();
@@ -189,7 +151,9 @@ System.err.println("Finished Dx");
     	return this.errorGobbler.getData();
     }
     
-
+    public String getDump() {
+    	return dump.toString();
+    }
 
     @Override
     // start communication with the bot

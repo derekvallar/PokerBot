@@ -17,11 +17,8 @@
 
 package com.theaigames.engine;
 
-import com.theaigames.game.texasHoldem.Player;
-import com.theaigames.engine.io.BotCommunication;
 import com.theaigames.engine.io.IOPlayer;
-import com.theaigames.engine.io.HumanPlayer;
-
+import com.theaigames.engine.io.HumanIOPlayer;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -35,8 +32,10 @@ import java.util.logging.Logger;
  * 
  * @author Jackie Xu <jackie@starapple.nl>, Jim van Eeden <jim@starapple.nl>
  */
-public class Engine implements BotCommunication {
+public class Engine {
     
+    public static String HUMAN_COMMAND = "java -cp bin bot.HumanStarter";
+
     // Boolean representing current engine running state
     private boolean isRunning;
     
@@ -44,12 +43,12 @@ public class Engine implements BotCommunication {
     private Logic logic;
     
     // ArrayList containing player handlers
-    private ArrayList<Player> players;
+    private ArrayList<IOPlayer> players;
     
     // Engine constructor 
     public Engine() {
         this.isRunning = false;
-        this.players = new ArrayList<Player>();
+        this.players = new ArrayList<IOPlayer>();
     }
     
     // Sets game logic
@@ -61,16 +60,15 @@ public class Engine implements BotCommunication {
     public boolean hasEnded() {
         return this.logic.isGameWon();
     }
-
-    @Override
+    
     // Adds a player to the game
-    public void addBot(String command, String name, long time) throws IOException {
+    public void addHumanPlayer() throws IOException {
 
         // Create new process
-        Process process = Runtime.getRuntime().exec(command);
+        Process process = Runtime.getRuntime().exec(HUMAN_COMMAND);
 
         // Attach IO to process
-        IOPlayer player = new IOPlayer(process, name, time);
+        HumanIOPlayer player = new HumanIOPlayer(process);
         
         // Add player
         this.players.add(player);
@@ -79,28 +77,36 @@ public class Engine implements BotCommunication {
         player.run();
     }
 
-    public void addHuman(String name) {
-        HumanPlayer player = new HumanPlayer(name);
+    // Adds a player to the game
+    public void addBotPlayer(String command) throws IOException {
+
+        // Create new process
+        Process process = Runtime.getRuntime().exec(command);
+
+        // Attach IO to process
+        IOPlayer player = new IOPlayer(process);
         
         // Add player
         this.players.add(player);
+
+        // Start running
+        player.run();
     }
 
-    @Override
     // Method to start engine
     public void start() throws Exception {
-
+    	
     	int round = 0;
-
+        
         // Set engine to running
         this.isRunning = true;
-
+        
         // Set up game settings
         this.logic.setupGame(this.players);
 
         // Keep running
         while (this.isRunning) {
-
+        
         	round++;
 
             // Play a round
@@ -110,10 +116,10 @@ public class Engine implements BotCommunication {
             if (this.hasEnded()) {
 
                 System.out.println("stopping...");
-
+                
                 // Stop running
                 this.isRunning = false;
-
+                
                 // Close off everything
                 try {
                 	this.logic.finish();

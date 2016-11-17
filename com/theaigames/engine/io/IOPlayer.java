@@ -139,7 +139,6 @@ public class IOPlayer implements Runnable {
     }
     
     public void addToDump(String dumpy){
-        System.out.println(dumpy);
 		dump.append(dumpy);
 	}
     

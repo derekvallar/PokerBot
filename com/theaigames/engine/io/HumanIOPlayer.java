@@ -32,8 +32,37 @@ import java.util.Scanner;
  */
 public class HumanIOPlayer extends IOPlayer {
     
+    PokerGUI gui;
+
     public HumanIOPlayer(Process process) {
         super(process);
+        gui = new PokerGUI();
+    }
+
+    public void process(String line, String type) throws IOException {
+        if (!this.finished) {
+            switch (type) {
+            case "input":
+                try {
+                    this.inputStream.write(line + "\n");
+                    this.inputStream.flush();
+                    gui.update(line);
+
+                } catch(IOException e) {
+                    System.err.println("Writing to bot failed");
+                }
+                addToDump(line + "\n");
+
+
+                break;
+            case "output":
+    //          System.out.println("out: " + line);
+                break;
+            case "error":
+    //          System.out.println("error: " + line);
+                break;
+            }
+        }
     }
 
     // waits for a response from the bot

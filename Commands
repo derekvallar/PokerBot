@@ -3,4 +3,4 @@
 javac -d bin/ `find ./ -name '*.java' -regex '^[./A-Za-z0-9]*$'`
 
 // Run Server:
-java -cp bin com.theaigames.game.texasHoldem.TexasHoldem "java -cp bin bot.BotStarter" "java -cp bin bot.BotStarter" 2>err.txt 1>out.txt
+java -cp bin com.theaigames.game.texasHoldem.TexasHoldem "java -cp bin bot.BotStarter" 2>err.txt

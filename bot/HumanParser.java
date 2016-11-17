@@ -39,7 +39,6 @@ public class HumanParser {
 			}
 
 			String[] parts = line.split("\\s+");
-				System.err.printf("hey");
 
 			if (parts.length == 3 && parts[0].equals("Action") ) {
 				// Do nothing

@@ -18,6 +18,9 @@ import poker.Card;
 import poker.HandHoldem;
 import poker.PokerMove;
 
+import com.theaigames.game.texasHoldem.table.BetRound;
+
+
 /**
  * Class that parses strings given by the engine and stores values for later use.
  */
@@ -50,6 +53,9 @@ public class BotState {
 	private int timeBank, timePerMove;
 	
 	private int handsPerLevel;
+
+	private BetRound betRound;
+
 	
 	/**
 	 * Parses the settings for this game
@@ -58,15 +64,19 @@ public class BotState {
 	 */
 	protected void updateSetting(String key, String value) {
 		settings.put(key, value);
-		if( key.equals("your_bot") ) {
+		if ( key.equals("your_bot") ) {
 			myName = value;
-		} else if ( key.equals("timebank") ) {			// Maximum amount of time your bot can take for one response
+		}
+		else if ( key.equals("timebank") ) {			// Maximum amount of time your bot can take for one response
 			timeBank = Integer.valueOf(value);
-		} else if ( key.equals("time_per_move") ) {		// The extra amount of time you get per response
+		}
+		else if ( key.equals("time_per_move") ) {		// The extra amount of time you get per response
 			timePerMove = Integer.valueOf(value);
-		} else if ( key.equals("hands_per_level") ) {	// Number of rounds before the blinds are increased
+		}
+		else if ( key.equals("hands_per_level") ) {	// Number of rounds before the blinds are increased
 			handsPerLevel = Integer.valueOf(value);
-		} else if ( key.equals("starting_stack") ) {	// Starting stack for each bot
+		}
+		else if ( key.equals("starting_stack") ) {	// Starting stack for each bot
 			myStack = Integer.valueOf(value);
 			opponentStack = Integer.valueOf(value);
 		} else {
@@ -80,21 +90,27 @@ public class BotState {
 	 * @param value : value to be set for the key
 	 */
 	protected void updateMatch(String key, String value) {
-		if( key.equals("round") ) { 				// Round number
+		if ( key.equals("round") ) { 				// Round number
 			round = Integer.valueOf(value);
 			System.err.println("Round " + round);   //printing the round to the output for debugging
             resetRoundVariables();
-		} else if( key.equals("small_blind") ) {	// Value of the small blind
+		}
+		else if ( key.equals("small_blind") ) {	// Value of the small blind
 			smallBlind = Integer.valueOf(value);
-		} else if( key.equals("big_blind") ) {		// Value of the big blind
+		}
+		else if ( key.equals("big_blind") ) {		// Value of the big blind
 			bigBlind = Integer.valueOf(value);
-		} else if( key.equals("on_button") ) {		// Which bot has the button, onButton is true if it's your bot
+		}
+		else if ( key.equals("on_button") ) {		// Which bot has the button, onButton is true if it's your bot
 			onButton = value.equals(myName);
-		} else if( key.equals("max_win_pot") ) {	// The size of the current pot
+		}
+		else if ( key.equals("max_win_pot") ) {	// The size of the current pot
 			pot = Integer.valueOf(value);
-		} else if( key.equals("amount_to_call") ) {	// The amount of the call
+		}
+		else if ( key.equals("amount_to_call") ) {	// The amount of the call
 			amountToCall = Integer.valueOf(value);
-		} else if ( key.equals("table") ) {			// The cards on the table
+		}
+		else if ( key.equals("table") ) {			// The cards on the table
 			table = parseCards(value);
 		} else {
 			System.err.printf("Unknown match command: %s %s\n", key, value);
@@ -108,29 +124,33 @@ public class BotState {
 	 * @param amount : value to be set for the key
 	 */
 	protected void updateMove(String bot, String key, String amount) {
-		if( bot.equals(myName) ) {
-			if( key.equals("stack") ) {					// The amount in your starting stack
+		if ( bot.equals(myName) ) {
+			if ( key.equals("stack") ) {					// The amount in your starting stack
 				myStack = Integer.valueOf(amount);
 			}
 			else if ( key.equals("post") ) {			// The amount you have to pay for the blind
 				myStack -= Integer.valueOf(amount);
 			}
-			else if( key.equals("hand") ) {				// Your cards
+			else if ( key.equals("hand") ) {				// Your cards
 				Card[] cards = parseCards(amount);
 				hand = new HandHoldem(cards[0], cards[1]);
-			} else if ( key.equals("wins") ) {
+			}
+		else if ( key.equals("wins") ) {
 				// Your winnings, not stored
 			} else {
 				// That should be all
 			}
 		} else { // assume it's the opponent
-			if( key.equals("stack") ) {					// The amount in your opponent's starting stack
+			if ( key.equals("stack") ) {					// The amount in your opponent's starting stack
 				opponentStack = Integer.valueOf(amount);
-			} else if ( key.equals("post") ) {			// The amount your opponent paid for the blind
+			}
+		else if ( key.equals("post") ) {			// The amount your opponent paid for the blind
 				opponentStack -= Integer.valueOf(amount);
-			} else if ( key.equals("hand")){
+			}
+		else if ( key.equals("hand")){
 				// Hand of the opponent on a showdown, not stored
-			} else if ( key.equals("wins") ) {
+			}
+		else if ( key.equals("wins") ) {
 				// Opponent winnings, not stored
 			} else {									// The move your opponent did
                 opponentMove = new PokerMove(bot, key, Integer.valueOf(amount));					
@@ -144,9 +164,9 @@ public class BotState {
 	 * @return Card[] : array of Card objects
 	 */
 	private Card[] parseCards(String value) {
-		if( value.endsWith("]") ) { value = value.substring(0, value.length()-1); }
-		if( value.startsWith("[") ) { value = value.substring(1); }
-		if( value.length() == 0 ) { return new Card[0]; }
+		if ( value.endsWith("]") ) { value = value.substring(0, value.length()-1); }
+		if ( value.startsWith("[") ) { value = value.substring(1); }
+		if ( value.length() == 0 ) { return new Card[0]; }
 		String[] parts = value.split(",");
 		Card[] cards = new Card[parts.length];
 		for( int i = 0; i < parts.length; ++i ) {
@@ -167,6 +187,7 @@ public class BotState {
 		amountToCall = 0;
 		hand = null;
 		table = new Card[0];
+		betRound = BetRound.PREFLOP;
 	}
 
 	public int getRound() {

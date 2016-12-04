@@ -48,8 +48,12 @@ public class HumanIOPlayer extends IOPlayer {
                     this.inputStream.flush();
                     gui.update(line);
 
-                } catch(IOException e) {
+                }
+                catch(IOException e) {
                     System.err.println("Writing to bot failed");
+                }
+                catch (InterruptedException e) {
+                    System.err.println("printDelay() error: " + e);
                 }
                 addToDump(line + "\n");
 

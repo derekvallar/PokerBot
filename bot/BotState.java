@@ -172,6 +172,17 @@ public class BotState {
 		for( int i = 0; i < parts.length; ++i ) {
 			cards[i] = Card.getCard(parts[i]);
 		}
+
+		if (cards.length == 3) {
+			betRound = BetRound.FLOP;
+		}
+		else if (cards.length == 4) {
+			betRound = BetRound.TURN;
+		}
+		else if (cards.length == 5) {
+			betRound = BetRound.RIVER;
+		}
+
 		return cards;
 	}
 	

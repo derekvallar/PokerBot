@@ -11,11 +11,18 @@
 
 
 package bot;
+import java.util.*;
 
 import poker.HandHoldem;
 import poker.PokerMove;
 
+
+import poker.Card;
+import com.theaigames.game.texasHoldem.table.BetRound;
+
+
 import bot.HandEval;
+import bot.HandEval.HandCategory;
 
 /**
  * This class is the brains of your bot. Make your calculations here and return the best move with GetMove
@@ -30,7 +37,7 @@ public class BotStarter extends Bot {
 	 * @param timeOut : The time you have to return a move
 	 * @return PokerMove : The move you will be doing
 	 */
-	public PokerMove getMove(BotState state, Long timeOut) {
+	public PokerMove getMoveNew(BotState state, Long timeOut) {
 		HandHoldem hand = state.getHand();
 		String handCategory = getHandCategory(hand, state.getTable()).toString();
 		System.err.printf("my hand is %s, opponent action is %s, pot: %d\n", handCategory, state.getOpponentAction(), state.getPot());
@@ -48,6 +55,292 @@ public class BotStarter extends Bot {
 			return new PokerMove(state.getMyName(), "check", 0);
 		}
 	}
+
+	public PokerMove getMove(BotState state, Long timeOut) {
+		HandHoldem hand = state.getHand();
+		HandEval.HandCategory category = getHandCategory(hand, state.getTable());
+		Card[] cards = state.getHand().getCards();
+		int conf = getConfidenceLevel(cards[0].toString(), cards[1].toString());
+		boolean goodKicker = isGoodKicker();
+		boolean topPair = isTopPair();
+
+
+		// The preflop state
+		if (state.getBetRound() == BetRound.PREFLOP) {
+			
+			// If starting round, and confidence is not good enough, flop
+			// the number 26 may contain a pair, or A#, K# combination.
+			if (conf < 26)
+				return new PokerMove(state.getMyName(), "fold", 0);
+
+			// Bot gets to decide first on the hand, doesnt know opponent decision
+			// At this point, the cands are decent to continue playing
+			if (state.onButton() == true) {
+
+				// if somewhat confident, just call it
+				// if really confident, bet twice amount
+				if (conf < 40)
+					return new PokerMove(state.getMyName(), "call", 0);
+				else
+					return new PokerMove(state.getMyName(), "raise", state.getCurrentBet() * 2);
+			}
+			else if (state.getOpponentAction().getAction().equals("raise")) {
+				// amount to call = whatever the opponent raise
+				// current bet = the previous agreed bet
+
+				// too much of a raise by opponent, leavee!!
+				if ((state.getAmountToCall() / state.getCurrentBet()) > 3)
+					return new PokerMove(state.getMyName(), "fold", 0);
+				else { // Opp's Raise is good enough, see if re-raise, or call
+
+					if (conf > 40) {
+						return new PokerMove(state.getMyName(), "raise", (int)(state.getAmountToCall() * 1.5));
+					}
+					else
+						return new PokerMove(state.getMyName(), "call", 0);
+
+				}
+
+			}
+			else if (state.getOpponentAction().getAction().equals("check")) {
+				return new PokerMove(state.getMyName(), "check", 0);
+			}
+		}
+		else if (state.getBetRound() == BetRound.FLOP) {
+			HandEval.HandCategory score = getHandCategory(hand, state.getTable());
+			double probToImprove = getProbability(state, score);
+			int curPot = state.getPot();
+
+			if (state.onButton() == true) { // bot goes first: FIX THIS LATER
+				int totalPot = (2 * state.getAmountToCall()) + state.getPot();
+				double xxxx = (double)state.getAmountToCall() / totalPot; // not sure what to name this LOL
+
+				if (score == HandCategory.NO_PAIR) { // not worth to go with it
+					return new PokerMove(state.getMyName(), "fold", 0);
+				}
+				else if (score == HandCategory.PAIR) {
+					if (topPair && goodKicker) {
+						return new PokerMove(state.getMyName(), "raise", state.getCurrentBet() * 2);
+					}
+					else if (topPair && !goodKicker) {
+						return new PokerMove(state.getMyName(), "check", 0);
+					}
+					else if (isPair(state.getHand().getCards()[0].toString(), 
+						state.getHand().getCards()[1].toString())) { // POCKET PAIR
+						return new PokerMove(state.getMyName(), "raise", state.getCurrentBet() * 2);
+					}
+					else
+						return new PokerMove(state.getMyName(), "check", 0);
+				}
+				else if (score == HandCategory.TWO_PAIR) {
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 1.5));
+				}
+				else if (score == HandCategory.THREE_OF_A_KIND) {
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 2));
+				}
+				else { // just raise high
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 2.5));
+				}
+					
+			}
+			else if (state.getOpponentAction().getAction().equals("raise")) {
+				int totalPot = (2 * state.getAmountToCall()) + state.getPot();
+				double xxxx = (double)state.getAmountToCall() / totalPot; // not sure what to name this LOL
+
+				if (score == HandCategory.NO_PAIR) { // not worth to go with it
+					return new PokerMove(state.getMyName(), "fold", 0);
+				}
+				else if (score == HandCategory.PAIR) {
+					if (topPair && goodKicker) {
+						if (probToImprove - xxxx <= .10)
+							return new PokerMove(state.getMyName(), "call", 0);
+						else
+							return new PokerMove(state.getMyName(), "raise", (int)(state.getAmountToCall() * 1.5));
+					}
+					else if (topPair && !goodKicker) {
+						return new PokerMove(state.getMyName(), "call", 0);
+					}
+					else if (isPair(state.getHand().getCards()[0].toString(), 
+						state.getHand().getCards()[1].toString())) { // POCKET PAIR
+
+						if (probToImprove - xxxx <= .10)
+							return new PokerMove(state.getMyName(), "call", 0);
+						else
+							return new PokerMove(state.getMyName(), "raise", state.getAmountToCall() * 2);
+					}
+					else
+						return new PokerMove(state.getMyName(), "call", 0);
+				}
+				else if (score == HandCategory.TWO_PAIR) {
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 1.5));
+				}
+				else if (score == HandCategory.THREE_OF_A_KIND) {
+
+					if (probToImprove - xxxx <= .10)
+						return new PokerMove(state.getMyName(), "raise", state.getAmountToCall() * 2);
+					else
+						return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 2.5)); // probs increase later
+				}
+				else { // just raise high
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 2.5));
+				}
+			}
+			else if (state.getOpponentAction().getAction().equals("check")) {
+				int totalPot = (2 * state.getAmountToCall()) + state.getPot();
+				double xxxx = (double)state.getAmountToCall() / totalPot;
+
+				if (probToImprove - xxxx <= .10)
+					return new PokerMove(state.getMyName(), "check", 0); // decides to check as well
+				else // raises by twice amount
+					return new PokerMove(state.getMyName(), "raise", state.getAmountToCall() * 2);
+			}
+			else 
+				return new PokerMove(state.getMyName(), "fold", 0); // default 
+
+		}
+		else if (state.getBetRound() == BetRound.TURN) {
+
+		}
+		else if (state.getBetRound() == BetRound.RIVER) {
+
+		}
+		else
+			return new PokerMove(state.getMyName(), "fold", 0);
+
+
+		return new PokerMove(state.getMyName(), "fold", 0); // to please compiler
+	}
+
+	// This returns a probability percentage of improving hand
+    // Uses the number of outs (cards to improve hand) to develop calculation
+    // On  the flop stage, multiply the outs times 4, on not the flop stage, multiply times 2
+    public int getProbability(BotState state, HandEval.HandCategory curScore) {
+    	int odds = calculateOdds(state, curScore);
+
+    	return state.getBetRound() == BetRound.FLOP ? odds * 4 : odds * 2;
+    }
+
+    public HashMap<String, Card> fullDeck() {
+    	HashMap<String, Card> deck = new HashMap<String, Card>();
+
+    	for (int i = 0; i < 52; i++) {
+    		Card card = new Card(i);
+    		deck.put(card.toString(), card);
+    	}
+
+    	return deck;
+    }
+
+    public int calculateOdds(BotState state, HandEval.HandCategory curScore) {
+    	//int currentMax = curScore;
+    	int singleOuts = 0;
+
+
+    	// Mocking a deck guesses
+    	HashMap<String,Card> deck = fullDeck();
+    	ArrayList<String> improves = new ArrayList<String>(); // cards that already improved hand
+
+		// cards shown on table + 2 hand cards + 1 possible extra
+    	Card temp[] = new Card[state.getTable().length + 1]; 
+
+    	// removing the cards appearing hand, and in table from possible solutions
+    	// storing them to build a 'solution' hand
+    	deck.remove(state.getHand().getCards()[0].toString());
+    	deck.remove(state.getHand().getCards()[1].toString());
+
+    	for (int i = 0; i < state.getTable().length; i++) {
+    		deck.remove(state.getTable()[i].toString());
+    		temp[i] = state.getTable()[i]; // building base for possible new table combination
+    	}
+
+    	
+
+    	// This helps determin how many cards can actually improve score
+    	// ON THE FLOP: what will the 6th card do to help
+    	// ON THE RIVER: what will the 7th card to help
+    	for (String key : deck.keySet()) {
+    		temp[temp.length - 1] = deck.get(key); // filling a next possible card
+
+    		// if card has not already been recorded as making improvement
+    		// and if that improvement is better than current score
+    		if (!improves.contains(deck.get(key)) && getHandCategory(state.getHand(), temp).ordinal() > curScore.ordinal())
+    			singleOuts++;
+    	}
+
+    	return singleOuts;
+    }
+
+	public boolean isGoodKicker() {
+		return true;
+	}
+
+	public boolean isTopPair() {
+		return true;
+	}
+
+	// FORMAT OF CARD: <rank><suit> : i.e. 3s, Ah
+	public int getConfidenceLevel(String card1, String card2) {
+
+		int confidence = 0;
+        boolean temp = false;
+
+
+        confidence = getRank(card1) + getRank(card2);
+        if(isPair(card1,card2))
+            confidence += 27; // Bonus cause its a pair
+        else { // No pair, but the cards might be good for a flush, or hold A or K
+            if (isAceOrKing(card1, card2))
+                confidence += 15;
+            else
+                confidence += (11 - Math.abs((getRank(card1) - getRank(card2))));
+        
+        }
+        return confidence;
+
+
+	}
+
+	public boolean isAceOrKing(String card1, String card2) {
+
+        if (getRank(card1) > 12 || getRank(card2) > 12)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean isPair(String card1, String card2) {
+        return getRank(card1) == getRank(card2); 
+    }
+
+    public int getRank(String val) {
+        int num = 0; 
+            
+        try {
+           num = Integer.parseInt(val.substring(0, val.length()-1));
+           return num;
+        } catch(NumberFormatException e) {val = val.substring(0, val.length()-1);}
+       switch(val) {
+            case "A":
+                num = 14;
+                break;
+            case "K":
+                num = 13;
+                break;
+            case "Q":
+                num = 12;
+                break;
+            case "J":
+                num = 11;
+                break;
+            default:
+                num = -1;
+                break;
+
+        }
+
+        return num;
+
+    }
 
 	/**
 	 * @param args

@@ -261,4 +261,8 @@ public class BotState {
 		return amountToCall;
 	}
 
+	public BetRound getBetRound() {
+		return betRound;
+	}
+
 }

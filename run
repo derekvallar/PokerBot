@@ -1,0 +1,1 @@
+java -cp bin com.theaigames.game.texasHoldem.TexasHoldem "java -cp bin bot.BotStarter" 2>err.txt

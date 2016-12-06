@@ -24,6 +24,11 @@ import com.theaigames.game.texasHoldem.table.BetRound;
 import bot.HandEval;
 import bot.HandEval.HandCategory;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * This class is the brains of your bot. Make your calculations here and return the best move with GetMove
  */
@@ -192,23 +197,105 @@ public class BotStarter extends Bot {
 				if (probToImprove - xxxx <= .10)
 					return new PokerMove(state.getMyName(), "check", 0); // decides to check as well
 				else // raises by twice amount
-					return new PokerMove(state.getMyName(), "raise", state.getAmountToCall() * 2);
+					return new PokerMove(state.getMyName(), "raise", state.getCurrentBet() * 2);
 			}
 			else 
 				return new PokerMove(state.getMyName(), "fold", 0); // default 
 
 		}
 		else if (state.getBetRound() == BetRound.TURN) {
+			HandEval.HandCategory score = getHandCategory(hand, state.getTable());
+			double probToImprove = getProbability(state, score);
+			int curPot = state.getPot();
+			int totalPot = (2 * state.getAmountToCall()) + state.getPot();
+			double xxxx = (double)state.getAmountToCall() / totalPot; // 
+			/*public static enum HandCategory { NO_PAIR, PAIR, TWO_PAIR, THREE_OF_A_KIND, STRAIGHT,
+							FLUSH, FULL_HOUSE, FOUR_OF_A_KIND, STRAIGHT_FLUSH; } */
+
+			if (state.onButton() == true) {
+				if (score == HandCategory.PAIR) {
+					if (xxxx < probToImprove) // not worth it to go on
+						return new PokerMove(state.getMyName(), "fold", 0);
+					else if (probToImprove - xxxx <= .10)
+						return new PokerMove(state.getMyName(), "check", 0);
+					else
+						return new PokerMove(state.getMyName(), "raise", state.getCurrentBet() * 2); // probs increase later
+				}
+				else
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 1.5));
+			}
+			else if (state.getOpponentAction().getAction().equals("raise")) {
+				if (score == HandCategory.PAIR) {
+					if (xxxx < probToImprove) // not worth it to go on
+						return new PokerMove(state.getMyName(), "fold", 0);
+					else if (probToImprove - xxxx <= .10)
+						return new PokerMove(state.getMyName(), "check", 0);
+					else
+						return new PokerMove(state.getMyName(), "raise", state.getAmountToCall() * 2);
+				}
+				else
+					return new PokerMove(state.getMyName(), "call", 0);
+			}
+			else if (state.getOpponentAction().getAction().equals("check")) {
+				return new PokerMove(state.getMyName(), "check", 0);
+			}
+			else 
+				return new PokerMove(state.getMyName(), "check", 0); // default
 
 		}
 		else if (state.getBetRound() == BetRound.RIVER) {
-
+			HandEval.HandCategory score = getHandCategory(hand, state.getTable());
+			if (state.onButton() == true) {
+				if (score == HandCategory.PAIR || score == HandCategory.TWO_PAIR || 
+					score == HandCategory.THREE_OF_A_KIND)
+					return new PokerMove(state.getMyName(), "check", 0);
+				else
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 1.5));
+			}
+			else
+				return new PokerMove(state.getMyName(), "check", 0); 
 		}
 		else
 			return new PokerMove(state.getMyName(), "fold", 0);
 
 
 		return new PokerMove(state.getMyName(), "fold", 0); // to please compiler
+	}
+
+
+	private boolean isGoodKicker(BotState state) {
+		HandHoldem hand = state.getHand();
+		Card[] table = state.getTable();
+		
+		Card[] totalCard = new Card[table.length + 2];
+		
+		totalCard[0] = hand.getCard(0);
+		totalCard[1] = hand.getCard(1);
+		
+		for (int i = 0; i < table.length; i++) {
+			totalCard[i + 2] = table[i];
+		}
+		
+		Set<Card> cardSet = new HashSet<>();
+        for (Card card : totalCard) {
+            if (cardSet.contains(card)) {
+                cardSet.remove(card);
+            }
+            else {
+                cardSet.add(card);
+            }
+        }
+
+        Card maxCard = Collections.max(cardSet);
+		return maxCard.getHeight().ordinal() >= 9;
+	}
+
+	private boolean isTopPair(BotState state) {
+		HandHoldem hand = state.getHand();
+		Card[] table = state.getTable();
+		Arrays.sort(table);
+		Card maxCard = table[table.length - 1];
+		return hand.getCard(0).equals(maxCard) || hand.getCard(1).equals(maxCard);
 	}
 
 	// This returns a probability percentage of improving hand

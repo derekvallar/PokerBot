@@ -18,7 +18,7 @@ import java.util.Map;
 /**
  * A Card class object represents one card
  */
-public class Card
+public class Card implements Comparable<Card>
 {
 	private CardHeight height;
 	private CardSuit suit;
@@ -138,5 +138,32 @@ public class Card
 		}		
 		
 		return str;
+	}
+
+	public boolean equals(Object other){
+            boolean result;
+            if((other == null) || (getClass() != other.getClass())) {
+		result = false;
+            } 
+            else {
+		Card otherCard = (Card)other;
+		result = this.getHeight() == otherCard.getHeight();
+            } 
+
+            return result;
+	}
+
+	public int hashCode() {
+            return height.ordinal();
+        }
+
+    public int compareTo(Card other) {
+            Card otherCard = (Card)other;
+
+            //ascending order
+            return height.ordinal() - otherCard.getHeight().ordinal();
+
+            //descending order
+            //return otherCard.getHeight().ordinal() - height.ordinal();
 	}
 }

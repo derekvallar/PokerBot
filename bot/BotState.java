@@ -56,6 +56,48 @@ public class BotState {
 
 	private BetRound betRound;
 
+	private OppHistory history = new OppHistory();
+
+	public class OppHistory {
+		public int gamesPlayed;
+		public int gamesLost;
+		public int gamesWon;
+
+		public int timesFolded;
+		public int timesChecked;
+		public int timesCalled;
+		public int timesRaised;
+
+		public int totalRaises;
+
+		public OppHistory() {
+			gamesPlayed = 0;
+			timesFolded = 0;
+			timesChecked = 0;
+			timesCalled = 0;
+			timesRaised = 0;
+			totalRaises = 0;
+		}
+
+		// Can either be: Tight passive
+		// 2) loose passive, 3) Tight aggresive
+		// 4) loose aggresive
+		public String getPlayStyle() {
+			if (gamesPlayed < 6)
+				return "unsure";
+
+
+			// the tight passive
+			if (timesFolded > timesChecked && timesFolded > timesCalled)
+				return "tight passive";
+			else if ((timesRaised + timesCalled) > timesFolded && timesFolded > timesChecked)
+				return "loose passive";
+			else if (timesFolded > timesChecked && (timesRaised > timesChecked || timesCalled > timesChecked))
+				return "tight aggresive";
+			else
+				return "loose aggresive";
+		}
+	}
 	
 	/**
 	 * Parses the settings for this game
@@ -137,6 +179,8 @@ public class BotState {
 			}
 		else if ( key.equals("wins") ) {
 				// Your winnings, not stored
+				history.gamesPlayed++;
+				history.gamesWon++;
 			} else {
 				// That should be all
 			}
@@ -152,8 +196,19 @@ public class BotState {
 			}
 		else if ( key.equals("wins") ) {
 				// Opponent winnings, not stored
+				history.gamesPlayed++;
+				history.gamesLost++;
 			} else {									// The move your opponent did
-                opponentMove = new PokerMove(bot, key, Integer.valueOf(amount));					
+                opponentMove = new PokerMove(bot, key, Integer.valueOf(amount));	
+                
+                if (opponentMove.getAction().equals("call"))
+                	history.timesCalled++;
+                else if (opponentMove.getAction().equals("check"))
+                	history.timesChecked++;
+                else if (opponentMove.getAction().equals("raise"))
+                	history.timesRaised++;
+                else if (opponentMove.getAction().equals("fold"))
+                	history.timesFolded++;			
 			}
 		}
 	}
@@ -233,6 +288,10 @@ public class BotState {
 		return opponentMove;
 	}
 	
+	public OppHistory getHistory() {
+		return history;
+	}
+
 	public int getCurrentBet() {
 		return currentBet;
 	}

@@ -28,7 +28,9 @@ public class Card implements Comparable<Card>
 	
 	/**
 	 * Creates a card object based on a number between 0 and 51
+	 * number
 	 */
+
 	public Card(int num)
 	{
 		number = num;
@@ -166,4 +168,5 @@ public class Card implements Comparable<Card>
             //descending order
             //return otherCard.getHeight().ordinal() - height.ordinal();
 	}
+
 }

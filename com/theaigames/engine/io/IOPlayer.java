@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import bot.Bot;
 
 /**
  * IOPlayer class
@@ -29,7 +30,7 @@ import java.util.logging.Logger;
  * 
  * @author Jackie Xu <jackie@starapple.nl>, Jim van Eeden <jim@starapple.nl>
  */
-public class IOPlayer implements Runnable {
+public class IOPlayer extends Bot implements Runnable {
 
     protected Process process;
     protected OutputStreamWriter inputStream;

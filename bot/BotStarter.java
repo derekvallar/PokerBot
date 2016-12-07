@@ -69,13 +69,24 @@ public class BotStarter extends Bot {
 		boolean goodKicker = isGoodKicker();
 		boolean topPair = isTopPair();
 
+		double multiplier = 0;
+		// raising 1.5  1.7  2  2.5 3
+		switch(state.getHistory().getPlayStyle()) {
+			case "tight passive": multiplier = 3; break;
+			case "loose passive": multiplier = 2.5; break;
+			case "tight aggresive": multiplier = 1.7; break;
+			case "loose aggresive": multiplier = 1.5; break;
+			case "unsure": multiplier = 2; break;
+			default: multiplier = 2; break;
+		}
+
 
 		// The preflop state
 		if (state.getBetRound() == BetRound.PREFLOP) {
 			
 			// If starting round, and confidence is not good enough, flop
 			// the number 26 may contain a pair, or A#, K# combination.
-			if (conf < 26)
+			if (conf < 20)
 				return new PokerMove(state.getMyName(), "fold", 0);
 
 			// Bot gets to decide first on the hand, doesnt know opponent decision
@@ -87,7 +98,7 @@ public class BotStarter extends Bot {
 				if (conf < 40)
 					return new PokerMove(state.getMyName(), "call", 0);
 				else
-					return new PokerMove(state.getMyName(), "raise", state.getCurrentBet() * 2);
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier));
 			}
 			else if (state.getOpponentAction().getAction().equals("raise")) {
 				// amount to call = whatever the opponent raise
@@ -99,7 +110,7 @@ public class BotStarter extends Bot {
 				else { // Opp's Raise is good enough, see if re-raise, or call
 
 					if (conf > 40) {
-						return new PokerMove(state.getMyName(), "raise", (int)(state.getAmountToCall() * 1.5));
+						return new PokerMove(state.getMyName(), "raise", (int)(state.getAmountToCall() * multiplier));
 					}
 					else
 						return new PokerMove(state.getMyName(), "call", 0);
@@ -125,26 +136,26 @@ public class BotStarter extends Bot {
 				}
 				else if (score == HandCategory.PAIR) {
 					if (topPair && goodKicker) {
-						return new PokerMove(state.getMyName(), "raise", state.getCurrentBet() * 2);
+						return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier));
 					}
 					else if (topPair && !goodKicker) {
 						return new PokerMove(state.getMyName(), "check", 0);
 					}
 					else if (isPair(state.getHand().getCards()[0].toString(), 
 						state.getHand().getCards()[1].toString())) { // POCKET PAIR
-						return new PokerMove(state.getMyName(), "raise", state.getCurrentBet() * 2);
+						return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier));
 					}
 					else
 						return new PokerMove(state.getMyName(), "check", 0);
 				}
 				else if (score == HandCategory.TWO_PAIR) {
-					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 1.5));
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier));
 				}
 				else if (score == HandCategory.THREE_OF_A_KIND) {
-					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 2));
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier));
 				}
 				else { // just raise high
-					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 2.5));
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier));
 				}
 					
 			}
@@ -160,7 +171,7 @@ public class BotStarter extends Bot {
 						if (probToImprove - xxxx <= .10)
 							return new PokerMove(state.getMyName(), "call", 0);
 						else
-							return new PokerMove(state.getMyName(), "raise", (int)(state.getAmountToCall() * 1.5));
+							return new PokerMove(state.getMyName(), "raise", (int)(state.getAmountToCall() * multiplier));
 					}
 					else if (topPair && !goodKicker) {
 						return new PokerMove(state.getMyName(), "call", 0);
@@ -171,23 +182,23 @@ public class BotStarter extends Bot {
 						if (probToImprove - xxxx <= .10)
 							return new PokerMove(state.getMyName(), "call", 0);
 						else
-							return new PokerMove(state.getMyName(), "raise", state.getAmountToCall() * 2);
+							return new PokerMove(state.getMyName(), "raise", (int)(state.getAmountToCall() * multiplier));
 					}
 					else
 						return new PokerMove(state.getMyName(), "call", 0);
 				}
 				else if (score == HandCategory.TWO_PAIR) {
-					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 1.5));
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier));
 				}
 				else if (score == HandCategory.THREE_OF_A_KIND) {
 
 					if (probToImprove - xxxx <= .10)
-						return new PokerMove(state.getMyName(), "raise", state.getAmountToCall() * 2);
+						return new PokerMove(state.getMyName(), "raise", (int)(state.getAmountToCall() * multiplier));
 					else
-						return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 2.5)); // probs increase later
+						return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier)); // probs increase later
 				}
 				else { // just raise high
-					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 2.5));
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier));
 				}
 			}
 			else if (state.getOpponentAction().getAction().equals("check")) {
@@ -197,7 +208,7 @@ public class BotStarter extends Bot {
 				if (probToImprove - xxxx <= .10)
 					return new PokerMove(state.getMyName(), "check", 0); // decides to check as well
 				else // raises by twice amount
-					return new PokerMove(state.getMyName(), "raise", state.getCurrentBet() * 2);
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier));
 			}
 			else 
 				return new PokerMove(state.getMyName(), "fold", 0); // default 
@@ -219,10 +230,10 @@ public class BotStarter extends Bot {
 					else if (probToImprove - xxxx <= .10)
 						return new PokerMove(state.getMyName(), "check", 0);
 					else
-						return new PokerMove(state.getMyName(), "raise", state.getCurrentBet() * 2); // probs increase later
+						return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier)); // probs increase later
 				}
 				else
-					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 1.5));
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier));
 			}
 			else if (state.getOpponentAction().getAction().equals("raise")) {
 				if (score == HandCategory.PAIR) {
@@ -231,7 +242,7 @@ public class BotStarter extends Bot {
 					else if (probToImprove - xxxx <= .10)
 						return new PokerMove(state.getMyName(), "check", 0);
 					else
-						return new PokerMove(state.getMyName(), "raise", state.getAmountToCall() * 2);
+						return new PokerMove(state.getMyName(), "raise", (int)(state.getAmountToCall() * multiplier));
 				}
 				else
 					return new PokerMove(state.getMyName(), "call", 0);
@@ -250,7 +261,7 @@ public class BotStarter extends Bot {
 					score == HandCategory.THREE_OF_A_KIND)
 					return new PokerMove(state.getMyName(), "check", 0);
 				else
-					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * 1.5));
+					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier));
 			}
 			else
 				return new PokerMove(state.getMyName(), "check", 0); 

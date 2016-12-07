@@ -30,7 +30,7 @@ public class Card
 	private int number;
 	private static Map<String,Card> stringToCard;
 
-	
+
 	/**
 	 * Creates a card object based on a number between 0 and 51
 	 */
@@ -150,4 +150,5 @@ public class Card
 		
 		return str;
 	}
+
 }

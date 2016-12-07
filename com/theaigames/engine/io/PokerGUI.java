@@ -4,6 +4,9 @@ import java.lang.Integer;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
+import poker.HandHoldem;
+import poker.Card;
+
 public class PokerGUI {
     
     TimeUnit unit = TimeUnit.MILLISECONDS;
@@ -18,8 +21,12 @@ public class PokerGUI {
 
     String name;
     String dealer;
-    ArrayList<Card> tableCards;
-    Card[] hand;
+    ArrayList<DisplayCard> tableCards;
+    ArrayList<String> s_tableCards;
+    ArrayList<Card> c_tableCards;
+    DisplayCard[] hand;
+    public Card[] c_hand;
+    public String[] s_hand;
     String[] lastAction;
     String[] lastActionValue;
 
@@ -31,11 +38,13 @@ public class PokerGUI {
     int[] chips;
     int[] post;
 
-    class Card {
+    // Changed the name from Card to DisplayCard
+    // Cause i needed the actual object Card
+    class DisplayCard {
         char rank;
         char suit;
 
-        public Card(String value) {
+        public DisplayCard(String value) {
             rank = value.charAt(0);
             char temp = value.charAt(1);
 
@@ -55,8 +64,12 @@ public class PokerGUI {
     }
 
     public PokerGUI() {
-        hand = new Card[2];
-        tableCards = new ArrayList<Card>();
+        hand = new DisplayCard[2];
+        c_hand = new Card[2];
+        s_hand = new String[2];
+        tableCards = new ArrayList<DisplayCard>();
+        s_tableCards = new ArrayList<String>();
+        c_tableCards = new ArrayList<Card>();
 
         lastAction = new String[2];
         lastActionValue = new String[2];
@@ -105,8 +118,10 @@ public class PokerGUI {
                         preflop = false;
                         String[] cards = value.substring(1, value.length() - 1).split(",");
                         tableCards.clear();
+                        s_tableCards.clear();
                         for (String s : cards) {
-                            tableCards.add(new Card(s));
+                            tableCards.add(new DisplayCard(s));
+                            s_tableCards.add(s);
                         }
                         drawUI();
                         break;
@@ -137,14 +152,29 @@ public class PokerGUI {
 
                     case "hand":
                         String[] handarray = value.substring(1, value.length() - 1).split(",");
-                        hand[0] = new Card(handarray[0]);
-                        hand[1] = new Card(handarray[1]);
+                        hand[0] = new DisplayCard(handarray[0]);
+                        hand[1] = new DisplayCard(handarray[1]);
+                        c_hand[0] = Card.getCard(handarray[0]);
+                        c_hand[1] = Card.getCard(handarray[1]);
+
+                        s_hand[0] = handarray[0];
+                        s_hand[1] = handarray[1];
 
                         drawUI();
                         
                         break;
 
                     case "wins":
+                        if (player == 0) {
+                            printDelay("You won this round! + "+ potSize + "\n", MEDIUM);
+                        }
+                        else {
+                            printDelay("Your opponent has won this round! + "+ potSize + "\n", MEDIUM);
+                        }
+                        s_tableCards = new ArrayList<String>();
+                        s_hand = new String[2];
+
+                        unit.sleep(PAUSE);
                         break;
 
                     case "fold":

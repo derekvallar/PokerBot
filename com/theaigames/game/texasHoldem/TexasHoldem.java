@@ -63,7 +63,7 @@ public class TexasHoldem implements Logic
         players.add(new Player(playerName2, ioPlayers.get(1), TIMEBANK_MAX, TIME_PER_MOVE));
 		
         // start the match player and send setup info to bots
-        System.out.println("starting game ...");
+        System.out.println("Starting Texas Hold'em ...");
 		matchPlayer = new MatchPlayer(players, GAME_TYPE, STARTING_STACK);
 		matchPlayer.finishSetup(true);
 		
@@ -130,17 +130,15 @@ public class TexasHoldem implements Logic
 		IOPlayer bot2 = players.get(1).getBot();
 		
 		if(winner != null) {
-			System.out.println("winner: " + winner.getName());
+			System.out.println("The winner is: " + winner.getName());
 		} else {
-			System.out.println("winner: draw");
+			System.out.println("It's a draw!");
 		}
 		
-		System.out.println("Saving the game...");
-		
+		// System.out.println("Saving the game...");
 		// print stuff here... (like the bot dumps)
-
-		System.out.println(bot1.getDump());
-		System.err.println(bot1.getStderr());
+		// System.out.println(bot1.getDump());
+		// System.err.println(bot1.getStderr());
 	}
     
     public static void main(String args[]) throws Exception {	

@@ -115,7 +115,7 @@ public class Engine {
             // Check if win condition has been met
             if (this.hasEnded()) {
 
-                System.out.println("stopping...");
+                System.out.println("The game has ended...");
                 
                 // Stop running
                 this.isRunning = false;

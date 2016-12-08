@@ -86,7 +86,7 @@ public class BotStarter extends Bot {
 			
 			// If starting round, and confidence is not good enough, flop
 			// the number 26 may contain a pair, or A#, K# combination.
-			if (conf < 20)
+			if (conf < 15)
 				return new PokerMove(state.getMyName(), "fold", 0);
 
 			// Bot gets to decide first on the hand, doesnt know opponent decision
@@ -105,7 +105,7 @@ public class BotStarter extends Bot {
 				// current bet = the previous agreed bet
 
 				// too much of a raise by opponent, leavee!!
-				if ((state.getAmountToCall() / state.getCurrentBet()) > 3)
+				if ((state.getAmountToCall() / state.getCurrentBet()) > 4)
 					return new PokerMove(state.getMyName(), "fold", 0);
 				else { // Opp's Raise is good enough, see if re-raise, or call
 
@@ -211,7 +211,7 @@ public class BotStarter extends Bot {
 					return new PokerMove(state.getMyName(), "raise", (int)(state.getCurrentBet() * multiplier));
 			}
 			else 
-				return new PokerMove(state.getMyName(), "fold", 0); // default 
+				return new PokerMove(state.getMyName(), "check", 0); // default 
 
 		}
 		else if (state.getBetRound() == BetRound.TURN) {
@@ -267,10 +267,10 @@ public class BotStarter extends Bot {
 				return new PokerMove(state.getMyName(), "check", 0); 
 		}
 		else
-			return new PokerMove(state.getMyName(), "fold", 0);
+			return new PokerMove(state.getMyName(), "check", 0);
 
 
-		return new PokerMove(state.getMyName(), "fold", 0); // to please compiler
+		return new PokerMove(state.getMyName(), "check", 0); // to please compiler
 	}
 
 
